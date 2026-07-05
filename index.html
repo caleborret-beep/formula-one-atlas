@@ -10,9 +10,6 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 
-<!-- Leaflet para el mapa de circuitos -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <!-- D3 para visualizaciones -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
 
@@ -146,6 +143,19 @@ section{padding:var(--s8) var(--s5);position:relative;}
 .circuit-pop__row{font-family:var(--mono);font-size:12px;color:var(--text-mute);display:flex;justify-content:space-between;gap:var(--s4);padding:2px 0;}
 .circuit-pop__row b{color:var(--text);font-weight:700;}
 .leaflet-container{font-family:var(--body);}
+
+/* CIRCUITOS — grilla de tarjetas */
+.circuit-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:var(--s4);}
+.circuit-card{display:flex;align-items:center;gap:var(--s4);text-align:left;width:100%;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:var(--s4) var(--s5);cursor:pointer;transition:transform .18s ease,border-color .18s ease,background .18s ease;font-family:inherit;color:inherit;}
+.circuit-card:hover{transform:translateY(-3px);border-color:var(--rojo);background:var(--surface-2);}
+.circuit-card__flag{font-size:2rem;line-height:1;flex-shrink:0;}
+.circuit-card__body{flex:1;min-width:0;}
+.circuit-card__name{font-family:var(--display);font-weight:700;font-size:1.15rem;text-transform:uppercase;letter-spacing:.02em;line-height:1;color:var(--text);}
+.circuit-card__country{font-family:var(--mono);font-size:11px;color:var(--text-mute);margin-top:4px;letter-spacing:.04em;}
+.circuit-card__meta{font-family:var(--mono);font-size:11px;color:var(--text-faint);margin-top:8px;display:flex;flex-wrap:wrap;gap:5px;align-items:center;}
+.circuit-card__dot{opacity:.5;}
+.circuit-card__chevron{font-family:var(--mono);color:var(--rojo);font-size:1.1rem;flex-shrink:0;transition:transform .18s ease;}
+.circuit-card:hover .circuit-card__chevron{transform:translateX(4px);}
 
 /* PILOTOS / ESCUDERÍAS — tarjetas de entidad */
 .entity-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:var(--s4);margin-top:var(--s6);}
@@ -395,8 +405,8 @@ section{padding:var(--s8) var(--s5);position:relative;}
   <div class="wrap">
     <div class="eyebrow">Capítulo 05 · El mapa del mundo</div>
     <h2 class="section-title">Circuitos</h2>
-    <p class="lead">De los templos originales de 1950 —Silverstone, Mónaco, Spa, Monza— a los trazados modernos. Toca cada punto para ver su historia, longitud, curvas y primer Gran Premio.</p>
-    <div id="map" role="application" aria-label="Mapa mundial interactivo de circuitos de Fórmula 1"></div>
+    <p class="lead">De los templos originales de 1950 —Silverstone, Mónaco, Spa, Monza— a los trazados modernos. Toca cada ficha para ver su historia completa: longitud, curvas, primer Gran Premio y poseedor del récord de vuelta.</p>
+    <div class="circuit-grid" id="circuit-grid" style="margin-top:var(--s5)"></div>
   </div>
 </section>
 
@@ -510,7 +520,7 @@ section{padding:var(--s8) var(--s5);position:relative;}
     <div class="about__sources">
       Datos en vivo · Jolpica-F1 API (sucesora de Ergast)<br>
       Datos históricos · curados y verificados<br>
-      Tecnología · HTML5 · CSS3 · JavaScript · D3.js · Leaflet · sin frameworks
+      Tecnología · HTML5 · CSS3 · JavaScript · D3.js · sin frameworks
     </div>
     <a href="javascript:void(0)" data-nav="inicio" class="back-top">↑ Volver al inicio · vuelta cerrada</a>
   </div>
@@ -887,34 +897,43 @@ function renderPowerCurve(){
   svg.append('text').attr('x',x(peak.x)).attr('y',y(peak.y)-14).attr('text-anchor','middle').attr('fill','var(--azul)').style('font-family','JetBrains Mono, monospace').style('font-size','11px').attr('opacity',0).text('Pico turbo · ~1.400 CV').transition().delay(1800).duration(500).attr('opacity',1);
 }
 
-/* ---------- RENDER: CIRCUITOS (Leaflet) ---------- */
-let mapInit=false;
-function renderMap(){
-  if(mapInit||typeof L==='undefined')return;mapInit=true;
-  const map=L.map('map',{scrollWheelZoom:false,attributionControl:true}).setView([30,10],2);
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{
-    attribution:'&copy; OpenStreetMap &copy; CARTO',subdomains:'abcd',maxZoom:19
-  }).addTo(map);
-  CIRCUITOS.forEach(c=>{
-    const marker=L.circleMarker([c.lat,c.lng],{radius:7,color:'#E8151E',fillColor:'#E8151E',fillOpacity:.55,weight:2});
-    marker.addTo(map).bindPopup(`
-      <div class="circuit-pop__name">${c.name}</div>
-      ${circuitTrackSlot(c)}
-      <div class="circuit-pop__row"><span>País</span><b>${c.country}</b></div>
-      <div class="circuit-pop__row"><span>Longitud</span><b>${c.len}</b></div>
-      <div class="circuit-pop__row"><span>Curvas</span><b>${c.corners}</b></div>
-      <div class="circuit-pop__row"><span>Primer GP</span><b>${c.first}</b></div>
-      <div class="circuit-pop__row"><span>Récord</span><b>${c.record}</b></div>
-      <div class="circuit-pop__row" style="margin-top:8px;color:var(--text-mute)">${c.note}</div>`,{maxWidth:280});
-    marker.on('mouseover',function(){this.setStyle({radius:11,fillOpacity:.85});});
-    marker.on('mouseout',function(){this.setStyle({radius:7,fillOpacity:.55});});
-    marker.on('popupopen',function(){
-      const gid=CIRCUIT_GEO_ID[c.name];
-      const slotId='track-'+(gid||c.name.replace(/[^a-z]/gi,''));
-      loadCircuitTrack(c.name,slotId);
-    });
+/* ---------- RENDER: CIRCUITOS (tarjetas + modal, sin mapa) ---------- */
+function openCircuitModal(c){
+  lastFocused=document.activeElement;
+  const b=document.getElementById('modal-badge');
+  b.textContent=(c.first);b.style.background='var(--rojo)';b.style.fontSize='1rem';
+  document.getElementById('modal-name').textContent=c.name;
+  document.getElementById('modal-sub').textContent=`${c.country} · Primer GP ${c.first}`;
+  document.getElementById('modal-bio').innerHTML=c.note;
+  document.getElementById('modal-stats').innerHTML=
+    [['Longitud',c.len],['Curvas',c.corners],['Primer GP',c.first],['Récord',c.record]]
+      .map(s=>`<div class="modal__stat"><b style="font-size:1.4rem">${s[1]}</b><span>${s[0]}</span></div>`).join('');
+  backdrop.classList.add('open');document.getElementById('modal-close').focus();
+}
+let circuitsDrawn=false;
+function renderCircuits(){
+  if(circuitsDrawn)return;circuitsDrawn=true;
+  const grid=document.getElementById('circuit-grid');
+  if(!grid)return;
+  // Bandera por país mediante emoji regional
+  const FLAG={'Reino Unido':'🇬🇧','Mónaco':'🇲🇨','Bélgica':'🇧🇪','Italia':'🇮🇹','Japón':'🇯🇵','Brasil':'🇧🇷','EE. UU.':'🇺🇸','Austria':'🇦🇹','Hungría':'🇭🇺','Países Bajos':'🇳🇱','Canadá':'🇨🇦','Bahréin':'🇧🇭','EAU':'🇦🇪','Arabia Saudí':'🇸🇦','España':'🇪🇸','Singapur':'🇸🇬','México':'🇲🇽','Catar':'🇶🇦'};
+  grid.innerHTML=CIRCUITOS.map((c,i)=>`
+    <button class="circuit-card" data-ci="${i}" aria-label="Ver detalles de ${c.name}">
+      <div class="circuit-card__flag">${FLAG[c.country]||'🏁'}</div>
+      <div class="circuit-card__body">
+        <div class="circuit-card__name">${c.name}</div>
+        <div class="circuit-card__country">${c.country}</div>
+        <div class="circuit-card__meta">
+          <span>${c.len}</span><span class="circuit-card__dot">·</span>
+          <span>${c.corners} curvas</span><span class="circuit-card__dot">·</span>
+          <span>desde ${c.first}</span>
+        </div>
+      </div>
+      <div class="circuit-card__chevron">→</div>
+    </button>`).join('');
+  grid.querySelectorAll('[data-ci]').forEach(el=>{
+    el.addEventListener('click',()=>openCircuitModal(CIRCUITOS[+el.getAttribute('data-ci')]));
   });
-  setTimeout(()=>map.invalidateSize(),200);
 }
 
 /* Punto 2 (corregido con fuente real): usa los SVG oficiales de circuitos de F1DB
@@ -924,14 +943,39 @@ function renderMap(){
    reales de cada pista en un path SVG. Si no hay red, muestra un aviso. */
 // Mapeo nombre → id GeoJSON verificado en bacinger/f1-circuits
 const CIRCUIT_GEO_ID={
-  'Silverstone':'gb-1950','Mónaco':'mc-1929','Spa-Francorchamps':'be-1925','Monza':'it-1922',
+  'Silverstone':'gb-1948','Mónaco':'mc-1929','Spa-Francorchamps':'be-1925','Monza':'it-1922',
   'Suzuka':'jp-1962','Interlagos':'br-1940','Circuit of the Americas':'us-2012','Red Bull Ring':'at-1969',
   'Hungaroring':'hu-1986','Zandvoort':'nl-1948','Montreal':'ca-1978','Bahréin':'bh-2002',
   'Yas Marina':'ae-2009','Jeddah':'sa-2021','Imola':'it-1953','Barcelona-Catalunya':'es-1991',
   'Singapur':'sg-2008','Las Vegas':'us-2023','México':'mx-1962','Yeda-Losail':'qa-2004',
 };
-const GEO_BASE='https://raw.githubusercontent.com/bacinger/f1-circuits/master/circuits/';
 const _geoCache={};
+// Caché global del archivo maestro (todos los circuitos en un solo fetch)
+let _masterGeoPromise=null;
+async function getMasterGeo(){
+  if(!_masterGeoPromise){
+    _masterGeoPromise=(async()=>{
+      const urls=[
+        'https://cdn.jsdelivr.net/gh/bacinger/f1-circuits@master/f1-circuits.geojson',
+        'https://raw.githubusercontent.com/bacinger/f1-circuits/master/f1-circuits.geojson'
+      ];
+      for(const url of urls){
+        try{
+          const r=await fetch(url);
+          if(r.ok){
+            const data=await r.json();
+            // El archivo maestro es un FeatureCollection con todas las pistas
+            const byId={};
+            (data.features||[data]).forEach(f=>{if(f.properties&&f.properties.id)byId[f.properties.id]=f;});
+            return byId;
+          }
+        }catch(e){}
+      }
+      return null;
+    })();
+  }
+  return _masterGeoPromise;
+}
 
 // Convierte coordenadas GeoJSON en un path SVG normalizado
 function geoToPath(coords,w=220,h=110,pad=10){
@@ -944,35 +988,43 @@ function geoToPath(coords,w=220,h=110,pad=10){
   return pts.map((p,i)=>(i?'L':'M')+p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ');
 }
 
+// Dibuja el trazado SVG a partir de un objeto GeoJSON Feature
+function drawTrackSVG(geo,name,cont){
+  let coords=geo.geometry.coordinates;
+  if(geo.geometry.type==='MultiLineString')coords=coords.flat();
+  const d=geoToPath(coords);
+  const first=d.split(' ')[0].slice(1).split(',');
+  cont.innerHTML=`<svg viewBox="0 0 220 110" width="220" height="110" aria-label="Trazado real de ${name}">
+    <path d="${d}" fill="none" stroke="#E8151E" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+    <circle cx="${first[0]}" cy="${first[1]}" r="3" fill="#C9A227"/>
+  </svg>`;
+}
+
 // Carga el GeoJSON del circuito y dibuja el trazado real en el contenedor dado
 async function loadCircuitTrack(name,containerId){
   const gid=CIRCUIT_GEO_ID[name];
   const cont=document.getElementById(containerId);
   if(!gid||!cont)return;
-  // Varias fuentes: jsDelivr (mejor CORS) y GitHub raw como respaldo
-  const sources=[
-    'https://cdn.jsdelivr.net/gh/bacinger/f1-circuits@master/circuits/'+gid+'.geojson',
-    GEO_BASE+gid+'.geojson',
-  ];
   try{
-    let geo=_geoCache[gid];
-    if(!geo){
-      for(const url of sources){
-        try{const res=await fetch(url);if(res.ok){geo=await res.json();_geoCache[gid]=geo;break;}}catch(e){}
-      }
+    // Primero: buscar en caché individual
+    if(_geoCache[gid]){drawTrackSVG(_geoCache[gid],name,cont);return;}
+    // Segundo: intentar con el archivo maestro (un solo fetch para todos los circuitos)
+    const master=await getMasterGeo();
+    if(master&&master[gid]){_geoCache[gid]=master[gid];drawTrackSVG(master[gid],name,cont);return;}
+    // Tercero: respaldo con archivo individual (jsDelivr primero, raw.githubusercontent después)
+    const sources=[
+      'https://cdn.jsdelivr.net/gh/bacinger/f1-circuits@master/circuits/'+gid+'.geojson',
+      'https://raw.githubusercontent.com/bacinger/f1-circuits/master/circuits/'+gid+'.geojson'
+    ];
+    for(const url of sources){
+      try{
+        const res=await fetch(url);
+        if(res.ok){const geo=await res.json();_geoCache[gid]=geo;drawTrackSVG(geo,name,cont);return;}
+      }catch(e){}
     }
-    if(!geo)throw 0;
-    // La geometría puede ser LineString o MultiLineString
-    let coords=geo.geometry.coordinates;
-    if(geo.geometry.type==='MultiLineString')coords=coords.flat();
-    const d=geoToPath(coords);
-    const first=d.split(' ')[0].slice(1).split(',');
-    cont.innerHTML=`<svg viewBox="0 0 220 110" width="220" height="110" aria-label="Trazado real de ${name}">
-      <path d="${d}" fill="none" stroke="#E8151E" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
-      <circle cx="${first[0]}" cy="${first[1]}" r="3" fill="#C9A227"/>
-    </svg>`;
+    throw new Error('no source');
   }catch(e){
-    cont.innerHTML='<div style="font-family:var(--mono);font-size:10px;color:var(--text-faint);padding:20px 8px;text-align:center">Trazado disponible al abrir con conexión a internet<br><span style="opacity:.6">Fuente: bacinger/f1-circuits (GeoJSON)</span></div>';
+    cont.innerHTML='<div style="font-family:var(--mono);font-size:10px;color:var(--text-faint);padding:20px 8px;text-align:center">Trazado no disponible<br><span style="opacity:.6">bacinger/f1-circuits (GeoJSON)</span></div>';
   }
 }
 
@@ -1876,7 +1928,7 @@ function initObservers(){
       e.target.classList.add('in');
       if(e.target.id==='historia'){renderStreamgraph();renderChampHeatmap('heatmap-drivers',CHAMP_DRIVERS);renderChampHeatmap('heatmap-teams',CHAMP_TEAMS);renderLineage();}
       if(e.target.id==='motores')renderPowerCurve();
-      if(e.target.id==='circuitos')renderMap();
+      if(e.target.id==='circuitos')renderCircuits();
       if(e.target.id==='estadisticas'){renderTreemap();renderBump();renderSankey();}
       if(e.target.id==='tracker'&&!window._trackerInit){window._trackerInit=true;initTracker();}
       if(e.target.id==='temporada')initSeason();
@@ -1990,6 +2042,7 @@ window.addEventListener('load',()=>{
   safe(renderStreamgraph);
   safe(()=>{renderChampHeatmap('heatmap-drivers',CHAMP_DRIVERS);renderChampHeatmap('heatmap-teams',CHAMP_TEAMS);});
   safe(renderLineage);
+  safe(renderCircuits);
   safe(renderTreemap);
   safe(()=>{const r=renderBump();if(r&&r.catch)r.catch(()=>{});});
   safe(renderSankey);
