@@ -156,6 +156,22 @@ section{padding:var(--s8) var(--s5);position:relative;}
 .circuit-card__dot{opacity:.5;}
 .circuit-card__chevron{font-family:var(--mono);color:var(--rojo);font-size:1.1rem;flex-shrink:0;transition:transform .18s ease;}
 .circuit-card:hover .circuit-card__chevron{transform:translateX(4px);}
+.circuit-card--historic{opacity:.9;border-style:dashed;}
+.circuit-card--historic:hover{border-style:solid;}
+.circuit-card__tag{font-family:var(--mono);font-size:9px;background:var(--rojo);color:#fff;padding:2px 6px;border-radius:4px;text-transform:uppercase;letter-spacing:.06em;vertical-align:middle;margin-left:6px;font-weight:600;}
+.circuit-section-label{font-family:var(--mono);font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:var(--text-mute);margin-bottom:var(--s4);padding-bottom:var(--s2);border-bottom:1px solid var(--border);}
+.circuit-grid__inner{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:var(--s4);}
+/* Modal enriquecido de circuito */
+.cmodal__grid{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--s5);margin-top:var(--s4);}
+.cmodal__block{background:var(--surface-2);border:1px solid var(--border);border-radius:12px;padding:var(--s4) var(--s5);}
+.cmodal__title{font-family:var(--display);font-weight:700;font-size:.95rem;text-transform:uppercase;letter-spacing:.05em;color:var(--rojo);margin-bottom:var(--s3);}
+.cmodal__row{font-family:var(--mono);font-size:12px;color:var(--text-mute);display:flex;justify-content:space-between;gap:var(--s3);padding:5px 0;border-bottom:1px solid var(--border);align-items:baseline;}
+.cmodal__row:last-child{border-bottom:none;}
+.cmodal__row b{color:var(--text);font-weight:700;text-align:right;}
+.gauge__grid{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--s2);}
+.gauge{display:flex;flex-direction:column;align-items:center;gap:6px;}
+.gauge__label{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:.04em;color:var(--text-faint);text-align:center;line-height:1.2;}
+@media(max-width:640px){.cmodal__grid{grid-template-columns:1fr;}}
 
 /* PILOTOS / ESCUDERÍAS — tarjetas de entidad */
 .entity-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:var(--s4);margin-top:var(--s6);}
@@ -236,7 +252,7 @@ section{padding:var(--s8) var(--s5);position:relative;}
 /* MODAL de detalle */
 .modal-backdrop{position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,.7);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;padding:var(--s4);}
 .modal-backdrop.open{display:flex;}
-.modal{background:var(--bg);border:1px solid var(--border);border-radius:16px;max-width:720px;width:100%;max-height:85vh;overflow-y:auto;padding:var(--s6);position:relative;}
+.modal{background:var(--bg);border:1px solid var(--border);border-radius:16px;max-width:860px;width:100%;max-height:88vh;overflow-y:auto;padding:var(--s6);position:relative;}
 .modal__close{position:absolute;top:var(--s4);right:var(--s4);}
 .modal__badge{width:56px;height:56px;border-radius:12px;background:var(--rojo);display:grid;place-items:center;font-family:var(--display);font-weight:700;font-size:1.5rem;color:#fff;margin-bottom:var(--s4);}
 .modal__name{font-family:var(--display);font-weight:700;font-size:clamp(2rem,5vw,3rem);text-transform:uppercase;line-height:.95;}
@@ -348,10 +364,10 @@ section{padding:var(--s8) var(--s5);position:relative;}
   <div class="wrap">
     <div class="eyebrow">Capítulo 01 · La línea del tiempo</div>
     <h2 class="section-title">La historia</h2>
-    <p class="lead">Desde el primer campeonato en Silverstone, 1950, hasta hoy. Cada temporada dejó un campeón, un dominio y un punto de inflexión. El flujo de abajo muestra cómo el poder cambió de manos entre las escuderías.</p>
+    <p class="lead">Desde el primer campeonato en Silverstone, 1950, hasta hoy. Cada década concentró el poder en unas pocas escuderías. El gráfico muestra cuántos títulos de constructores ganó cada equipo en cada década: pasa el cursor por cada bloque para ver el detalle, y observa cómo el dominio cambió de manos —de Ferrari y Lotus a Williams, McLaren, Mercedes y Red Bull.</p>
     <div class="history__viz">
-      <svg id="streamgraph" viewBox="0 0 1000 320" role="img" aria-label="Gráfico de flujo del dominio de las principales escuderías por década, de 1950 a 2020"></svg>
-      <p class="viz-caption">Dominio relativo de escuderías por década · trazo D3</p>
+      <svg id="streamgraph" viewBox="0 0 1000 430" role="img" aria-label="Títulos de constructores por escudería y década, de 1950 a 2020"></svg>
+      <p class="viz-caption">Títulos de constructores por década y escudería · interactivo</p>
     </div>
     <div class="timeline" id="timeline"></div>
 
@@ -660,26 +676,32 @@ const ESCUDERIAS=[
 
 /* ---------- CIRCUITOS (20 con datos verificados) ---------- */
 const CIRCUITOS=[
-  {name:'Silverstone',country:'Reino Unido',lat:52.0733,lng:-1.0142,len:'5,891 km',corners:18,first:1950,record:'Verstappen',note:'La cuna de la F1: sede del primer Gran Premio del mundial moderno en 1950. Curvas rapidísimas como el complejo Maggotts-Becketts-Chapel.'},
-  {name:'Mónaco',country:'Mónaco',lat:43.7347,lng:7.4206,len:'3,337 km',corners:19,first:1950,record:'Verstappen',note:'El circuito urbano más prestigioso y exigente, sin margen de error. Barreras a centímetros y el legendario túnel. Ganar aquí es la cumbre.'},
-  {name:'Spa-Francorchamps',country:'Bélgica',lat:50.4372,lng:5.9714,len:'7,004 km',corners:19,first:1950,record:'Hamilton',note:'El trazado más largo del calendario, enclavado en los Ardenas. Eau Rouge-Raidillon pone a prueba el valor; el clima cambia de un sector a otro.'},
-  {name:'Monza',country:'Italia',lat:45.6156,lng:9.2811,len:'5,793 km',corners:11,first:1950,record:'Barrichello',note:'El "Templo de la Velocidad", casa de Ferrari desde 1950. Rectas larguísimas y velocidades sobre 360 km/h. Los Tifosi lo convierten en una fiesta.'},
-  {name:'Suzuka',country:'Japón',lat:34.8431,lng:136.5410,len:'5,807 km',corners:18,first:1987,record:'Hamilton',note:'Trazado único en forma de ocho, favorito de los pilotos. Las Esses, la Degner y la temible 130R. Ha decidido numerosos títulos mundiales.'},
-  {name:'Interlagos',country:'Brasil',lat:-23.7036,lng:-46.6997,len:'4,309 km',corners:15,first:1973,record:'Bottas',note:'Antihorario, con desnivel constante y ambiente apasionado. Escenario de finales dramáticos, como el título de Hamilton en la última curva de 2008.'},
-  {name:'Circuit of the Americas',country:'EE. UU.',lat:30.1328,lng:-97.6411,len:'5,514 km',corners:20,first:2012,record:'Leclerc',note:'El moderno circuito de Austin, con una subida icónica a la curva 1 y un primer sector inspirado en los grandes clásicos. Motor del auge de la F1 en EE. UU.'},
-  {name:'Red Bull Ring',country:'Austria',lat:47.2197,lng:14.7647,len:'4,318 km',corners:10,first:1970,record:'Sainz',note:'Corto pero exigente, entre las montañas de Estiria. Fuertes subidas y frenadas cuesta abajo que premian la potencia y la valentía.'},
-  {name:'Hungaroring',country:'Hungría',lat:47.5789,lng:19.2486,len:'4,381 km',corners:14,first:1986,record:'Hamilton',note:'Estrecho y sinuoso, apodado "Mónaco sin muros". Primer GP tras el Telón de Acero. Adelantar es dificilísimo, lo que exige estrategia perfecta.'},
-  {name:'Zandvoort',country:'Países Bajos',lat:52.3888,lng:4.5409,len:'4,259 km',corners:14,first:1952,record:'Hamilton',note:'Clásico junto al Mar del Norte, con curvas peraltadas reintroducidas para su regreso. Un mar naranja de aficionados anima a Verstappen en casa.'},
-  {name:'Montreal',country:'Canadá',lat:45.5000,lng:-73.5228,len:'4,361 km',corners:14,first:1978,record:'Bottas',note:'Circuito Gilles Villeneuve, sobre una isla artificial. Rápido y accidentado, con el célebre "Muro de los Campeones" que ha castigado a leyendas.'},
-  {name:'Bahréin',country:'Bahréin',lat:26.0325,lng:50.5106,len:'5,412 km',corners:15,first:2004,record:'De la Rosa',note:'Trazado del desierto, sede habitual de los test de pretemporada. Carreras nocturnas bajo focos con múltiples zonas de adelantamiento.'},
-  {name:'Yas Marina',country:'EAU',lat:24.4672,lng:54.6031,len:'5,281 km',corners:16,first:2009,record:'Verstappen',note:'Abu Dabi, escenario del cierre de temporada al atardecer. Sede del dramático desenlace del título de 2021 en la última vuelta.'},
-  {name:'Jeddah',country:'Arabia Saudí',lat:21.6319,lng:39.1044,len:'6,174 km',corners:27,first:2021,record:'Hamilton',note:'El circuito urbano más rápido del mundo, con velocidades medias solo superadas por Monza. Muros cercanos y ritmo vertiginoso bajo focos.'},
-  {name:'Imola',country:'Italia',lat:44.3439,lng:11.7167,len:'4,909 km',corners:19,first:1980,record:'Schumacher',note:'Autódromo Enzo e Dino Ferrari, a la antigua usanza. Cargado de historia y emoción, marcado para siempre por los sucesos de 1994.'},
-  {name:'Barcelona-Catalunya',country:'España',lat:41.5700,lng:2.2611,len:'4,657 km',corners:14,first:1991,record:'Verstappen',note:'Pista de referencia para los test por su variedad de curvas. Un circuito que expone sin piedad las virtudes y defectos de cada monoplaza.'},
-  {name:'Singapur',country:'Singapur',lat:1.2914,lng:103.8640,len:'4,940 km',corners:19,first:2008,record:'Hamilton',note:'La primera carrera nocturna de la historia. Circuito urbano brutal por el calor y la humedad, una prueba de resistencia física para los pilotos.'},
-  {name:'Las Vegas',country:'EE. UU.',lat:36.1147,lng:-115.1728,len:'6,201 km',corners:17,first:2023,record:'Piastri',note:'Espectáculo por el Strip de Las Vegas de madrugada. Largas rectas de altísima velocidad entre los casinos más icónicos del mundo.'},
-  {name:'México',country:'México',lat:19.4042,lng:-99.0907,len:'4,304 km',corners:17,first:1963,record:'Bottas',note:'Autódromo Hermanos Rodríguez, a gran altitud, lo que reduce la carga aerodinámica. El estadio del último sector ofrece un ambiente único.'},
-  {name:'Yeda-Losail',country:'Catar',lat:25.4900,lng:51.4542,len:'5,419 km',corners:16,first:2021,record:'Verstappen',note:'Circuito de Losail, originalmente para motociclismo. Curvas rápidas y fluidas bajo focos que exigen un compromiso aerodinámico alto.'},
+  {name:'Silverstone',country:'Reino Unido',flag:'🇬🇧',len:'5,891 km',corners:18,first:1950,record:'1:27.097',recordDriver:'Verstappen',recordYear:2020,type:'Permanente',drs:2,elevation:15,direction:'Horario',cornerBreak:'6 baja / 6 media / 6 alta',topspeed:330,avgspeed:235,pitloss:20.0,designer:'—',opened:1948,owner:'BRDC',active:true,note:'La cuna de la F1: sede del primer Gran Premio del mundial moderno en 1950. Curvas rapidísimas como el complejo Maggotts-Becketts-Chapel.',demands:{traccion:60,frenado:60,lateral:90,aero:85},strategy:{adelantamiento:70,evolucion:60,lluvia:40,safetycar:40},surface:{agarre:75,abrasion:70,estres:85,degradacion:75}},
+  {name:'Mónaco',country:'Mónaco',flag:'🇲🇨',len:'3,337 km',corners:19,first:1950,record:'1:12.909',recordDriver:'Hamilton',recordYear:2021,type:'Urbano',drs:1,elevation:42,direction:'Horario',cornerBreak:'8 baja / 9 media / 2 alta',topspeed:290,avgspeed:160,pitloss:19.0,designer:'—',opened:1929,owner:'ACM',active:true,note:'El circuito urbano más prestigioso y exigente, sin margen de error. Barreras a centímetros y el legendario túnel. Ganar aquí es la cumbre.',demands:{traccion:90,frenado:80,lateral:60,aero:100},strategy:{adelantamiento:10,evolucion:80,lluvia:40,safetycar:70},surface:{agarre:60,abrasion:40,estres:50,degradacion:40}},
+  {name:'Spa-Francorchamps',country:'Bélgica',flag:'🇧🇪',len:'7,004 km',corners:19,first:1950,record:'1:46.286',recordDriver:'Hamilton',recordYear:2020,type:'Permanente',drs:2,elevation:102,direction:'Horario',cornerBreak:'5 baja / 6 media / 8 alta',topspeed:340,avgspeed:235,pitloss:18.0,designer:'—',opened:1921,owner:'Región Valona',active:true,note:'El trazado más largo del calendario, enclavado en los Ardenas. Eau Rouge-Raidillon pone a prueba el valor; el clima cambia de un sector a otro.',demands:{traccion:70,frenado:70,lateral:85,aero:70},strategy:{adelantamiento:80,evolucion:60,lluvia:70,safetycar:60},surface:{agarre:70,abrasion:65,estres:90,degradacion:70}},
+  {name:'Monza',country:'Italia',flag:'🇮🇹',len:'5,793 km',corners:11,first:1950,record:'1:21.046',recordDriver:'Barrichello',recordYear:2004,type:'Permanente',drs:2,elevation:12,direction:'Horario',cornerBreak:'4 baja / 4 media / 3 alta',topspeed:360,avgspeed:250,pitloss:23.0,designer:'—',opened:1922,owner:'ACI',active:true,note:'El "Templo de la Velocidad", casa de Ferrari desde 1950. Rectas larguísimas y velocidades sobre 360 km/h. Los Tifosi lo convierten en una fiesta.',demands:{traccion:60,frenado:90,lateral:40,aero:20},strategy:{adelantamiento:80,evolucion:60,lluvia:40,safetycar:50},surface:{agarre:65,abrasion:55,estres:60,degradacion:60}},
+  {name:'Suzuka',country:'Japón',flag:'🇯🇵',len:'5,807 km',corners:18,first:1987,record:'1:30.983',recordDriver:'Hamilton',recordYear:2019,type:'Permanente',drs:1,elevation:40,direction:'Ocho (mixto)',cornerBreak:'4 baja / 7 media / 7 alta',topspeed:330,avgspeed:230,pitloss:22.0,designer:'John Hugenholtz',opened:1962,owner:'Honda Mobilityland',active:true,note:'Trazado único en forma de ocho, favorito de los pilotos. Las Esses, la Degner y la temible 130R. Ha decidido numerosos títulos mundiales.',demands:{traccion:70,frenado:70,lateral:95,aero:85},strategy:{adelantamiento:50,evolucion:70,lluvia:60,safetycar:40},surface:{agarre:80,abrasion:75,estres:95,degradacion:80}},
+  {name:'Interlagos',country:'Brasil',flag:'🇧🇷',len:'4,309 km',corners:15,first:1973,record:'1:10.540',recordDriver:'Bottas',recordYear:2018,type:'Permanente',drs:2,elevation:43,direction:'Antihorario',cornerBreak:'6 baja / 6 media / 3 alta',topspeed:320,avgspeed:215,pitloss:21.0,designer:'—',opened:1940,owner:'Municipalidad de São Paulo',active:true,note:'Antihorario, con desnivel constante y ambiente apasionado. Escenario de finales dramáticos, como el título de Hamilton en la última curva de 2008.',demands:{traccion:70,frenado:60,lateral:70,aero:65},strategy:{adelantamiento:80,evolucion:70,lluvia:70,safetycar:60},surface:{agarre:70,abrasion:65,estres:70,degradacion:70}},
+  {name:'Circuit of the Americas',country:'EE. UU.',flag:'🇺🇸',len:'5,514 km',corners:20,first:2012,record:'1:36.169',recordDriver:'Leclerc',recordYear:2019,type:'Permanente',drs:2,elevation:41,direction:'Antihorario',cornerBreak:'7 baja / 8 media / 5 alta',topspeed:320,avgspeed:210,pitloss:21.0,designer:'Hermann Tilke',opened:2012,owner:'COTA LLC',active:true,note:'El moderno circuito de Austin, con una subida icónica a la curva 1 y un primer sector inspirado en los grandes clásicos. Motor del auge de la F1 en EE. UU.',demands:{traccion:70,frenado:70,lateral:85,aero:75},strategy:{adelantamiento:70,evolucion:60,lluvia:50,safetycar:50},surface:{agarre:70,abrasion:70,estres:80,degradacion:75}},
+  {name:'Red Bull Ring',country:'Austria',flag:'🇦🇹',len:'4,318 km',corners:10,first:1970,record:'1:05.619',recordDriver:'Sainz',recordYear:2020,type:'Permanente',drs:3,elevation:65,direction:'Horario',cornerBreak:'4 baja / 3 media / 3 alta',topspeed:320,avgspeed:230,pitloss:19.0,designer:'—',opened:1969,owner:'Red Bull',active:true,note:'Corto pero exigente, entre las montañas de Estiria. Fuertes subidas y frenadas cuesta abajo que premian la potencia y la valentía.',demands:{traccion:80,frenado:80,lateral:60,aero:50},strategy:{adelantamiento:80,evolucion:60,lluvia:50,safetycar:50},surface:{agarre:70,abrasion:60,estres:65,degradacion:65}},
+  {name:'Hungaroring',country:'Hungría',flag:'🇭🇺',len:'4,381 km',corners:14,first:1986,record:'1:16.627',recordDriver:'Hamilton',recordYear:2020,type:'Permanente',drs:2,elevation:36,direction:'Horario',cornerBreak:'6 baja / 6 media / 2 alta',topspeed:305,avgspeed:195,pitloss:20.0,designer:'—',opened:1986,owner:'Hungaroring Sport Zrt',active:true,note:'Estrecho y sinuoso, apodado "Mónaco sin muros". Primer GP tras el Telón de Acero. Adelantar es dificilísimo, lo que exige estrategia perfecta.',demands:{traccion:80,frenado:70,lateral:75,aero:90},strategy:{adelantamiento:20,evolucion:70,lluvia:50,safetycar:50},surface:{agarre:65,abrasion:55,estres:60,degradacion:70}},
+  {name:'Zandvoort',country:'Países Bajos',flag:'🇳🇱',len:'4,259 km',corners:14,first:1952,record:'1:11.097',recordDriver:'Hamilton',recordYear:2021,type:'Permanente',drs:2,elevation:15,direction:'Horario',cornerBreak:'4 baja / 6 media / 4 alta',topspeed:315,avgspeed:215,pitloss:20.0,designer:'John Hugenholtz',opened:1948,owner:'—',active:true,note:'Clásico junto al Mar del Norte, con curvas peraltadas reintroducidas para su regreso. Un mar naranja de aficionados anima a Verstappen en casa.',demands:{traccion:70,frenado:60,lateral:85,aero:85},strategy:{adelantamiento:30,evolucion:70,lluvia:60,safetycar:50},surface:{agarre:75,abrasion:70,estres:80,degradacion:75}},
+  {name:'Montreal',country:'Canadá',flag:'🇨🇦',len:'4,361 km',corners:14,first:1978,record:'1:13.078',recordDriver:'Bottas',recordYear:2019,type:'Híbrido',drs:3,elevation:6,direction:'Horario',cornerBreak:'7 baja / 4 media / 3 alta',topspeed:335,avgspeed:215,pitloss:17.0,designer:'—',opened:1978,owner:'Ciudad de Montreal',active:true,note:'Circuito Gilles Villeneuve, sobre una isla artificial. Rápido y accidentado, con el célebre "Muro de los Campeones" que ha castigado a leyendas.',demands:{traccion:80,frenado:90,lateral:50,aero:45},strategy:{adelantamiento:70,evolucion:60,lluvia:60,safetycar:70},surface:{agarre:60,abrasion:50,estres:60,degradacion:70}},
+  {name:'Bahréin',country:'Bahréin',flag:'🇧🇭',len:'5,412 km',corners:15,first:2004,record:'0:55.404',recordDriver:'George Russell',recordYear:2020,type:'Permanente',drs:3,elevation:17,direction:'Horario',cornerBreak:'3 baja / 5 media / 3 alta',topspeed:330,avgspeed:230,pitloss:22.0,designer:'Hermann Tilke',opened:2004,owner:'Bahrain Mumtalakat Holding',active:true,note:'Trazado del desierto, sede habitual de los test de pretemporada. Carreras nocturnas bajo focos con múltiples zonas de adelantamiento.',demands:{traccion:80,frenado:80,lateral:60,aero:60},strategy:{adelantamiento:80,evolucion:60,lluvia:20,safetycar:60},surface:{agarre:80,abrasion:80,estres:60,degradacion:60}},
+  {name:'Yas Marina',country:'EAU',flag:'🇦🇪',len:'5,281 km',corners:16,first:2009,record:'1:26.103',recordDriver:'Verstappen',recordYear:2021,type:'Permanente',drs:2,elevation:9,direction:'Antihorario',cornerBreak:'6 baja / 7 media / 3 alta',topspeed:325,avgspeed:205,pitloss:21.0,designer:'Hermann Tilke',opened:2009,owner:'Aldar',active:true,note:'Abu Dabi, escenario del cierre de temporada al atardecer. Sede del dramático desenlace del título de 2021 en la última vuelta.',demands:{traccion:70,frenado:70,lateral:60,aero:60},strategy:{adelantamiento:50,evolucion:60,lluvia:10,safetycar:50},surface:{agarre:70,abrasion:60,estres:60,degradacion:60}},
+  {name:'Jeddah',country:'Arabia Saudí',flag:'🇸🇦',len:'6,174 km',corners:27,first:2021,record:'1:30.734',recordDriver:'Hamilton',recordYear:2021,type:'Urbano',drs:3,elevation:12,direction:'Antihorario',cornerBreak:'3 baja / 8 media / 16 alta',topspeed:330,avgspeed:250,pitloss:20.0,designer:'Hermann Tilke',opened:2021,owner:'—',active:true,note:'El circuito urbano más rápido del mundo, con velocidades medias solo superadas por Monza. Muros cercanos y ritmo vertiginoso bajo focos.',demands:{traccion:60,frenado:60,lateral:90,aero:70},strategy:{adelantamiento:60,evolucion:70,lluvia:10,safetycar:80},surface:{agarre:70,abrasion:55,estres:85,degradacion:65}},
+  {name:'Imola',country:'Italia',flag:'🇮🇹',len:'4,909 km',corners:19,first:1980,record:'1:15.484',recordDriver:'Schumacher',recordYear:2004,type:'Permanente',drs:1,elevation:30,direction:'Antihorario',cornerBreak:'6 baja / 8 media / 5 alta',topspeed:320,avgspeed:225,pitloss:27.0,designer:'—',opened:1953,owner:'—',active:true,note:'Autódromo Enzo e Dino Ferrari, a la antigua usanza. Cargado de historia y emoción, marcado para siempre por los sucesos de 1994.',demands:{traccion:70,frenado:80,lateral:80,aero:75},strategy:{adelantamiento:20,evolucion:70,lluvia:50,safetycar:50},surface:{agarre:70,abrasion:65,estres:80,degradacion:70}},
+  {name:'Barcelona-Catalunya',country:'España',flag:'🇪🇸',len:'4,657 km',corners:14,first:1991,record:'1:16.330',recordDriver:'Verstappen',recordYear:2021,type:'Permanente',drs:2,elevation:30,direction:'Horario',cornerBreak:'4 baja / 6 media / 4 alta',topspeed:325,avgspeed:215,pitloss:21.0,designer:'—',opened:1991,owner:'—',active:true,note:'Pista de referencia para los test por su variedad de curvas. Un circuito que expone sin piedad las virtudes y defectos de cada monoplaza.',demands:{traccion:70,frenado:60,lateral:90,aero:90},strategy:{adelantamiento:40,evolucion:60,lluvia:40,safetycar:40},surface:{agarre:75,abrasion:85,estres:90,degradacion:85}},
+  {name:'Singapur',country:'Singapur',flag:'🇸🇬',len:'4,940 km',corners:19,first:2008,record:'1:35.867',recordDriver:'Hamilton',recordYear:2023,type:'Urbano',drs:3,elevation:18,direction:'Antihorario',cornerBreak:'9 baja / 8 media / 2 alta',topspeed:310,avgspeed:175,pitloss:28.0,designer:'Hermann Tilke',opened:2008,owner:'—',active:true,note:'La primera carrera nocturna de la historia. Circuito urbano brutal por el calor y la humedad, una prueba de resistencia física para los pilotos.',demands:{traccion:90,frenado:80,lateral:60,aero:95},strategy:{adelantamiento:30,evolucion:80,lluvia:50,safetycar:80},surface:{agarre:65,abrasion:50,estres:55,degradacion:55}},
+  {name:'Las Vegas',country:'EE. UU.',flag:'🇺🇸',len:'6,201 km',corners:17,first:2023,record:'1:35.490',recordDriver:'Piastri',recordYear:2024,type:'Urbano',drs:2,elevation:12,direction:'Antihorario',cornerBreak:'6 baja / 7 media / 4 alta',topspeed:350,avgspeed:245,pitloss:19.0,designer:'—',opened:2023,owner:'Liberty Media',active:true,note:'Espectáculo por el Strip de Las Vegas de madrugada. Largas rectas de altísima velocidad entre los casinos más icónicos del mundo.',demands:{traccion:60,frenado:70,lateral:50,aero:20},strategy:{adelantamiento:70,evolucion:70,lluvia:10,safetycar:70},surface:{agarre:60,abrasion:50,estres:60,degradacion:60}},
+  {name:'México',country:'México',flag:'🇲🇽',len:'4,304 km',corners:17,first:1963,record:'1:17.774',recordDriver:'Bottas',recordYear:2021,type:'Permanente',drs:3,elevation:2240,direction:'Horario',cornerBreak:'7 baja / 6 media / 4 alta',topspeed:350,avgspeed:210,pitloss:21.0,designer:'—',opened:1962,owner:'—',active:true,note:'Autódromo Hermanos Rodríguez, a gran altitud, lo que reduce la carga aerodinámica. El estadio del último sector ofrece un ambiente único.',demands:{traccion:70,frenado:80,lateral:50,aero:95},strategy:{adelantamiento:60,evolucion:60,lluvia:40,safetycar:60},surface:{agarre:60,abrasion:50,estres:55,degradacion:60}},
+  {name:'Yeda-Losail',country:'Catar',flag:'🇶🇦',len:'5,419 km',corners:16,first:2021,record:'1:23.196',recordDriver:'Verstappen',recordYear:2021,type:'Permanente',drs:1,elevation:5,direction:'Horario',cornerBreak:'3 baja / 7 media / 6 alta',topspeed:325,avgspeed:225,pitloss:22.0,designer:'—',opened:2004,owner:'QMMF',active:true,note:'Circuito de Losail, originalmente para motociclismo. Curvas rápidas y fluidas bajo focos que exigen un compromiso aerodinámico alto.',demands:{traccion:60,frenado:60,lateral:90,aero:80},strategy:{adelantamiento:50,evolucion:70,lluvia:10,safetycar:50},surface:{agarre:75,abrasion:70,estres:90,degradacion:80}},
+  {name:'Nürburgring Nordschleife',country:'Alemania',flag:'🇩🇪',len:'22,835 km',corners:154,first:1951,record:'7:03.400',recordDriver:'Lauda',recordYear:1975,type:'Permanente (histórico)',drs:0,elevation:300,direction:'Horario',cornerBreak:'Innumerables',topspeed:290,avgspeed:180,pitloss:0,designer:'Gustav Eichler',opened:1927,owner:'—',active:false,note:'El "Infierno Verde": 22 km y más de 150 curvas por los bosques del Eifel. Tras el accidente casi fatal de Niki Lauda en 1976, la F1 nunca volvió al trazado completo.',demands:{traccion:80,frenado:80,lateral:90,aero:70},strategy:{adelantamiento:60,evolucion:50,lluvia:80,safetycar:40},surface:{agarre:55,abrasion:50,estres:95,degradacion:70}},
+  {name:'Reims-Gueux',country:'Francia',flag:'🇫🇷',len:'8,302 km',corners:8,first:1950,record:'2:18.700',recordDriver:'Clark',recordYear:1963,type:'Ruta pública (histórico)',drs:0,elevation:20,direction:'Horario',cornerBreak:'2 baja / 3 media / 3 alta',topspeed:310,avgspeed:230,pitloss:0,designer:'—',opened:1926,owner:'—',active:false,note:'Triángulo de carreteras entre viñedos de Champagne. Rectas larguísimas donde el rebufo definía la carrera. Usado hasta 1966; hoy quedan sus tribunas como reliquia.',demands:{traccion:50,frenado:60,lateral:40,aero:15},strategy:{adelantamiento:90,evolucion:50,lluvia:50,safetycar:30},surface:{agarre:55,abrasion:50,estres:60,degradacion:55}},
+  {name:'Watkins Glen',country:'EE. UU.',flag:'🇺🇸',len:'5,435 km',corners:11,first:1961,record:'1:34.068',recordDriver:'Hunt',recordYear:1974,type:'Permanente (histórico)',drs:0,elevation:50,direction:'Horario',cornerBreak:'3 baja / 5 media / 3 alta',topspeed:300,avgspeed:200,pitloss:0,designer:'—',opened:1956,owner:'—',active:false,note:'"The Glen", hogar del GP de EE. UU. durante 20 años (1961-1980). Trazado ondulante en el estado de Nueva York, muy querido por los pilotos de la época.',demands:{traccion:70,frenado:70,lateral:75,aero:70},strategy:{adelantamiento:60,evolucion:60,lluvia:60,safetycar:50},surface:{agarre:65,abrasion:60,estres:75,degradacion:65}},
+  {name:'Kyalami',country:'Sudáfrica',flag:'🇿🇦',len:'4,261 km',corners:9,first:1967,record:'1:17.578',recordDriver:'Mansell',recordYear:1992,type:'Permanente (histórico)',drs:0,elevation:1500,direction:'Antihorario',cornerBreak:'3 baja / 4 media / 2 alta',topspeed:310,avgspeed:205,pitloss:0,designer:'—',opened:1961,owner:'—',active:false,note:'El GP de Sudáfrica a gran altitud, cerca de Johannesburgo. Sede de carreras memorables hasta 1993; ha sonado repetidamente para un posible regreso de la F1 a África.',demands:{traccion:70,frenado:70,lateral:70,aero:75},strategy:{adelantamiento:60,evolucion:60,lluvia:40,safetycar:40},surface:{agarre:65,abrasion:60,estres:70,degradacion:65}},
+  {name:'Estoril',country:'Portugal',flag:'🇵🇹',len:'4,360 km',corners:13,first:1984,record:'1:16.271',recordDriver:'Hakkinen',recordYear:1994,type:'Permanente (histórico)',drs:0,elevation:45,direction:'Horario',cornerBreak:'4 baja / 6 media / 3 alta',topspeed:305,avgspeed:200,pitloss:0,designer:'—',opened:1972,owner:'—',active:false,note:'El GP de Portugal entre 1984 y 1996. Escenario de la primera victoria de Ayrton Senna en 1985, bajo un diluvio memorable. Larga recta principal y curvas técnicas.',demands:{traccion:70,frenado:65,lateral:75,aero:75},strategy:{adelantamiento:50,evolucion:60,lluvia:60,safetycar:40},surface:{agarre:65,abrasion:60,estres:75,degradacion:70}},
+  {name:'Adelaida',country:'Australia',flag:'🇦🇺',len:'3,780 km',corners:16,first:1985,record:'1:15.381',recordDriver:'Schumacher',recordYear:1994,type:'Urbano (histórico)',drs:0,elevation:10,direction:'Antihorario',cornerBreak:'7 baja / 6 media / 3 alta',topspeed:310,avgspeed:185,pitloss:0,designer:'—',opened:1985,owner:'—',active:false,note:'Circuito urbano que cerró la temporada de 1985 a 1995. Escenario del polémico choque Schumacher-Hill de 1994 que definió el título. Muy apreciado por su ambiente.',demands:{traccion:80,frenado:80,lateral:55,aero:70},strategy:{adelantamiento:50,evolucion:70,lluvia:50,safetycar:70},surface:{agarre:60,abrasion:50,estres:55,degradacion:55}}
 ];
 
 /* ============ PUNTO 1: CAMPEONES POR AÑO (curado, verificado) ============ */
@@ -822,24 +844,81 @@ function renderStreamgraph(){
   if(streamDrawn)return;
   if(typeof d3==='undefined'){d3Missing('streamgraph');return;}
   streamDrawn=true;
-  const svg=d3.select('#streamgraph'),W=1000,H=320,m={top:20,right:20,bottom:30,left:20};
+  const svg=d3.select('#streamgraph');svg.selectAll('*').remove();
+  const W=1000,H=430,m={top:30,right:30,bottom:60,left:50};
   const teams=Object.keys(STREAM_TEAMS);
-  const data=STREAM_DECADES.map((d,i)=>{const r={decade:i};teams.forEach(t=>r[t]=STREAM_TEAMS[t][i]);return r;});
-  const series=d3.stack().keys(teams).offset(d3.stackOffsetWiggle).order(d3.stackOrderInsideOut)(data);
-  const x=d3.scaleLinear().domain([0,STREAM_DECADES.length-1]).range([m.left,W-m.right]);
-  const yMin=d3.min(series,s=>d3.min(s,d=>d[0])),yMax=d3.max(series,s=>d3.max(s,d=>d[1]));
-  const y=d3.scaleLinear().domain([yMin,yMax]).range([H-m.bottom,m.top]);
-  const area=d3.area().x((d,i)=>x(i)).y0(d=>y(d[0])).y1(d=>y(d[1])).curve(d3.curveBasis);
-  svg.selectAll('path').data(series).enter().append('path').attr('d',area)
-    .attr('fill',d=>TEAM_COLORS[d.key]).attr('stroke','var(--bg)').attr('stroke-width',1)
-    .attr('opacity',0).transition().duration(1200).delay((d,i)=>i*120).attr('opacity',.82);
-  svg.selectAll('text.dec').data(STREAM_DECADES).enter().append('text').attr('class','dec')
-    .attr('x',(d,i)=>x(i)).attr('y',H-8).attr('text-anchor','middle').attr('fill','var(--text-faint)')
+  // Datos: por década, títulos de cada escudería
+  const data=STREAM_DECADES.map((dec,i)=>{const r={decade:dec,i};teams.forEach(t=>r[t]=STREAM_TEAMS[t][i]);return r;});
+  const totalPer=data.map(d=>teams.reduce((s,t)=>s+d[t],0));
+  const maxTotal=Math.max(...totalPer);
+  const x=d3.scaleBand().domain(STREAM_DECADES).range([m.left,W-m.right]).padding(0.28);
+  const y=d3.scaleLinear().domain([0,maxTotal]).nice().range([H-m.bottom,m.top]);
+  const series=d3.stack().keys(teams)(data);
+
+  // Rejilla horizontal + etiquetas de eje Y
+  const yticks=y.ticks(maxTotal);
+  svg.selectAll('line.grid').data(yticks).enter().append('line').attr('class','grid')
+    .attr('x1',m.left).attr('x2',W-m.right).attr('y1',d=>y(d)).attr('y2',d=>y(d))
+    .attr('stroke','var(--border)').attr('stroke-width',1).attr('opacity',.5);
+  svg.selectAll('text.yl').data(yticks).enter().append('text').attr('class','yl')
+    .attr('x',m.left-12).attr('y',d=>y(d)+4).attr('text-anchor','end').attr('fill','var(--text-faint)')
     .style('font-family','JetBrains Mono, monospace').style('font-size','11px').text(d=>d);
-  const legend=svg.append('g').attr('transform',`translate(${m.left},${m.top})`);
-  teams.forEach((t,i)=>{const g=legend.append('g').attr('transform',`translate(${i*130},0)`);
-    g.append('rect').attr('width',10).attr('height',10).attr('fill',TEAM_COLORS[t]).attr('rx',2);
-    g.append('text').attr('x',16).attr('y',9).attr('fill','var(--text-mute)').style('font-family','JetBrains Mono, monospace').style('font-size','10px').text(t);});
+  svg.append('text').attr('x',m.left-12).attr('y',m.top-12).attr('text-anchor','end').attr('fill','var(--text-mute)')
+    .style('font-family','JetBrains Mono, monospace').style('font-size','10px').text('Títulos');
+
+  // Tooltip
+  let tip=svg.append('g').style('opacity',0).style('pointer-events','none');
+  const tipBg=tip.append('rect').attr('rx',6).attr('fill','var(--asfalto)').attr('stroke','var(--border)').attr('width',150).attr('height',44);
+  const tipT1=tip.append('text').attr('x',10).attr('y',18).attr('fill','#fff').style('font-family','Inter,sans-serif').style('font-size','12px').style('font-weight','700');
+  const tipT2=tip.append('text').attr('x',10).attr('y',34).attr('fill','#bbb').style('font-family','JetBrains Mono,monospace').style('font-size','11px');
+
+  // Barras apiladas
+  const groups=svg.selectAll('g.team').data(series).enter().append('g').attr('class','team').attr('fill',d=>TEAM_COLORS[d.key]);
+  groups.selectAll('rect').data(d=>d.map(v=>({...v,key:d.key}))).enter().append('rect')
+    .attr('x',d=>x(d.data.decade)).attr('width',x.bandwidth())
+    .attr('y',d=>y(0)).attr('height',0).attr('rx',3)
+    .style('cursor','pointer')
+    .on('mouseover',function(ev,d){
+      d3.select(this).attr('opacity',1).attr('stroke','var(--text)').attr('stroke-width',1.5);
+      groups.selectAll('rect').filter(r=>r.key!==d.key).attr('opacity',.25);
+      const val=d.data[d.key];
+      tipT1.text(`${d.key} · ${d.data.decade}`);
+      tipT2.text(`${val} ${val===1?'título':'títulos'} de constructores`);
+      const tw=Math.max(tipT1.node().getComputedTextLength(),tipT2.node().getComputedTextLength())+20;
+      tipBg.attr('width',tw);
+      let tx=x(d.data.decade)+x.bandwidth()/2-tw/2;tx=Math.max(m.left,Math.min(tx,W-m.right-tw));
+      const ty=y(d[1])-52;
+      tip.attr('transform',`translate(${tx},${Math.max(m.top,ty)})`).style('opacity',1);
+    })
+    .on('mouseout',function(){
+      groups.selectAll('rect').attr('opacity',1).attr('stroke','none');
+      tip.style('opacity',0);
+    })
+    .transition().duration(900).delay((d,i)=>i*80)
+    .attr('y',d=>y(d[1])).attr('height',d=>Math.max(0,y(d[0])-y(d[1])));
+
+  // Total encima de cada columna
+  svg.selectAll('text.tot').data(data).enter().append('text').attr('class','tot')
+    .attr('x',d=>x(d.decade)+x.bandwidth()/2).attr('y',d=>y(totalPer[d.i])-8).attr('text-anchor','middle')
+    .attr('fill','var(--text)').style('font-family','JetBrains Mono, monospace').style('font-size','12px').style('font-weight','700')
+    .style('opacity',0).text((d,i)=>totalPer[i]).transition().delay(1000).duration(400).style('opacity',1);
+
+  // Etiquetas de década (eje X)
+  svg.selectAll('text.dec').data(STREAM_DECADES).enter().append('text').attr('class','dec')
+    .attr('x',d=>x(d)+x.bandwidth()/2).attr('y',H-m.bottom+22).attr('text-anchor','middle').attr('fill','var(--text-mute)')
+    .style('font-family','JetBrains Mono, monospace').style('font-size','12px').style('font-weight','600').text(d=>d);
+
+  // Leyenda interactiva (clic para resaltar)
+  const legend=svg.append('g').attr('transform',`translate(${m.left},${H-24})`);
+  let offset=0;
+  teams.forEach((t)=>{
+    const g=legend.append('g').attr('transform',`translate(${offset},0)`).style('cursor','pointer');
+    g.append('rect').attr('width',11).attr('height',11).attr('fill',TEAM_COLORS[t]).attr('rx',2).attr('y',-9);
+    const txt=g.append('text').attr('x',16).attr('y',0).attr('fill','var(--text-mute)').style('font-family','JetBrains Mono, monospace').style('font-size','11px').text(t);
+    g.on('mouseover',function(){groups.selectAll('rect').filter(r=>r.key!==t).attr('opacity',.25);})
+     .on('mouseout',function(){groups.selectAll('rect').attr('opacity',1);});
+    offset+=t.length*7.5+34;
+  });
 }
 
 /* ---------- RENDER: DÉCADAS ---------- */
@@ -898,16 +977,101 @@ function renderPowerCurve(){
 }
 
 /* ---------- RENDER: CIRCUITOS (tarjetas + modal, sin mapa) ---------- */
+// Medidor circular tipo "donut" con porcentaje (como la referencia f1-fansite)
+function gauge(pct,label,color){
+  const r=26,c=2*Math.PI*r,off=c*(1-pct/100);
+  return `<div class="gauge">
+    <svg viewBox="0 0 64 64" width="64" height="64">
+      <circle cx="32" cy="32" r="${r}" fill="none" stroke="var(--border)" stroke-width="6"/>
+      <circle cx="32" cy="32" r="${r}" fill="none" stroke="${color}" stroke-width="6"
+        stroke-dasharray="${c}" stroke-dashoffset="${off}" stroke-linecap="round"
+        transform="rotate(-90 32 32)"/>
+      <text x="32" y="37" text-anchor="middle" fill="var(--text)" style="font-family:JetBrains Mono,monospace;font-size:14px;font-weight:700">${pct}%</text>
+    </svg>
+    <div class="gauge__label">${label}</div>
+  </div>`;
+}
+// Color según intensidad: verde bajo, ámbar medio, rojo alto
+function gaugeColor(v){return v>=75?'#E8151E':v>=50?'#F58220':'#4CAF50';}
+function circuitRow(label,value,accent){
+  return `<div class="cmodal__row"><span>${label}</span><b${accent?' style="color:var(--rojo)"':''}>${value}</b></div>`;
+}
 function openCircuitModal(c){
   lastFocused=document.activeElement;
   const b=document.getElementById('modal-badge');
-  b.textContent=(c.first);b.style.background='var(--rojo)';b.style.fontSize='1rem';
+  b.textContent=c.flag||'🏁';b.style.background='transparent';b.style.fontSize='2rem';
   document.getElementById('modal-name').textContent=c.name;
-  document.getElementById('modal-sub').textContent=`${c.country} · Primer GP ${c.first}`;
-  document.getElementById('modal-bio').innerHTML=c.note;
-  document.getElementById('modal-stats').innerHTML=
-    [['Longitud',c.len],['Curvas',c.corners],['Primer GP',c.first],['Récord',c.record]]
-      .map(s=>`<div class="modal__stat"><b style="font-size:1.4rem">${s[1]}</b><span>${s[0]}</span></div>`).join('');
+  const estado=c.active?'Circuito activo':'Circuito histórico · inactivo';
+  document.getElementById('modal-sub').innerHTML=`${c.country} · Primer GP ${c.first} · <span style="color:${c.active?'#4CAF50':'#F58220'}">${estado}</span>`;
+
+  const g=c.demands,s=c.strategy,su=c.surface;
+  document.getElementById('modal-bio').innerHTML=`
+    <p style="margin-bottom:var(--s5)">${c.note}</p>
+
+    <div class="cmodal__grid">
+      <!-- GEOMETRÍA -->
+      <div class="cmodal__block">
+        <div class="cmodal__title">Geometría de la pista</div>
+        ${circuitRow('Distancia de vuelta',c.len)}
+        ${circuitRow('Tipo de circuito',c.type)}
+        ${circuitRow('Zonas DRS',c.drs>0?('Zonas '+c.drs):'Ninguna (histórico)')}
+        ${circuitRow('Cambio de elevación',c.elevation+' m')}
+        ${circuitRow('Dirección',c.direction)}
+        ${circuitRow('Curvas',c.corners+' — '+c.cornerBreak)}
+      </div>
+
+      <!-- DEMANDAS DE CONDUCCIÓN -->
+      <div class="cmodal__block">
+        <div class="cmodal__title">Demandas de conducción</div>
+        <div class="gauge__grid">
+          ${gauge(g.traccion,'Tracción',gaugeColor(g.traccion))}
+          ${gauge(g.frenado,'Frenado',gaugeColor(g.frenado))}
+          ${gauge(g.lateral,'Lateral',gaugeColor(g.lateral))}
+          ${gauge(g.aero,'Carga aero',gaugeColor(g.aero))}
+        </div>
+      </div>
+
+      <!-- RENDIMIENTO -->
+      <div class="cmodal__block">
+        <div class="cmodal__title">Rendimiento</div>
+        ${circuitRow('Velocidad máxima',c.topspeed+' km/h')}
+        ${circuitRow('Velocidad media',c.avgspeed+' km/h')}
+        ${c.pitloss>0?circuitRow('Pérdida en boxes',c.pitloss+' s'):''}
+        ${circuitRow('Récord de vuelta',c.record+' ('+c.recordDriver+', '+c.recordYear+')',true)}
+      </div>
+
+      <!-- ESTRATEGIA -->
+      <div class="cmodal__block">
+        <div class="cmodal__title">Estrategia de carrera</div>
+        <div class="gauge__grid">
+          ${gauge(s.adelantamiento,'Adelantam.',gaugeColor(s.adelantamiento))}
+          ${gauge(s.evolucion,'Evol. pista',gaugeColor(s.evolucion))}
+          ${gauge(s.lluvia,'Riesgo lluvia',gaugeColor(s.lluvia))}
+          ${gauge(s.safetycar,'Safety car',gaugeColor(s.safetycar))}
+        </div>
+      </div>
+
+      <!-- PATRIMONIO -->
+      <div class="cmodal__block">
+        <div class="cmodal__title">Patrimonio</div>
+        ${circuitRow('Inauguración',c.opened+' (hace '+(2026-c.opened)+' años)')}
+        ${circuitRow('Diseñador',c.designer!=='—'?c.designer:'Trazado clásico')}
+        ${circuitRow('Propietario',c.owner!=='—'?c.owner:'—')}
+        ${circuitRow('Estado',c.active?'En el calendario actual':'Fuera del calendario')}
+      </div>
+
+      <!-- SUPERFICIE Y NEUMÁTICOS -->
+      <div class="cmodal__block">
+        <div class="cmodal__title">Superficie y neumáticos</div>
+        <div class="gauge__grid">
+          ${gauge(su.agarre,'Agarre',gaugeColor(su.agarre))}
+          ${gauge(su.abrasion,'Abrasión',gaugeColor(su.abrasion))}
+          ${gauge(su.estres,'Estrés',gaugeColor(su.estres))}
+          ${gauge(su.degradacion,'Degradación',gaugeColor(su.degradacion))}
+        </div>
+      </div>
+    </div>`;
+  document.getElementById('modal-stats').innerHTML='';
   backdrop.classList.add('open');document.getElementById('modal-close').focus();
 }
 let circuitsDrawn=false;
@@ -915,13 +1079,13 @@ function renderCircuits(){
   if(circuitsDrawn)return;circuitsDrawn=true;
   const grid=document.getElementById('circuit-grid');
   if(!grid)return;
-  // Bandera por país mediante emoji regional
-  const FLAG={'Reino Unido':'🇬🇧','Mónaco':'🇲🇨','Bélgica':'🇧🇪','Italia':'🇮🇹','Japón':'🇯🇵','Brasil':'🇧🇷','EE. UU.':'🇺🇸','Austria':'🇦🇹','Hungría':'🇭🇺','Países Bajos':'🇳🇱','Canadá':'🇨🇦','Bahréin':'🇧🇭','EAU':'🇦🇪','Arabia Saudí':'🇸🇦','España':'🇪🇸','Singapur':'🇸🇬','México':'🇲🇽','Catar':'🇶🇦'};
-  grid.innerHTML=CIRCUITOS.map((c,i)=>`
-    <button class="circuit-card" data-ci="${i}" aria-label="Ver detalles de ${c.name}">
-      <div class="circuit-card__flag">${FLAG[c.country]||'🏁'}</div>
+  // Separar activos e históricos
+  const render=(list)=>list.map((c)=>{
+    const i=CIRCUITOS.indexOf(c);
+    return `<button class="circuit-card${c.active?'':' circuit-card--historic'}" data-ci="${i}" aria-label="Ver detalles de ${c.name}">
+      <div class="circuit-card__flag">${c.flag||'🏁'}</div>
       <div class="circuit-card__body">
-        <div class="circuit-card__name">${c.name}</div>
+        <div class="circuit-card__name">${c.name}${c.active?'':' <span class="circuit-card__tag">histórico</span>'}</div>
         <div class="circuit-card__country">${c.country}</div>
         <div class="circuit-card__meta">
           <span>${c.len}</span><span class="circuit-card__dot">·</span>
@@ -930,7 +1094,14 @@ function renderCircuits(){
         </div>
       </div>
       <div class="circuit-card__chevron">→</div>
-    </button>`).join('');
+    </button>`;
+  }).join('');
+  const active=CIRCUITOS.filter(c=>c.active),historic=CIRCUITOS.filter(c=>!c.active);
+  grid.innerHTML=`
+    <div class="circuit-section-label">Circuitos del calendario actual · ${active.length}</div>
+    <div class="circuit-grid__inner">${render(active)}</div>
+    <div class="circuit-section-label" style="margin-top:var(--s6)">Circuitos históricos · ${historic.length}</div>
+    <div class="circuit-grid__inner">${render(historic)}</div>`;
   grid.querySelectorAll('[data-ci]').forEach(el=>{
     el.addEventListener('click',()=>openCircuitModal(CIRCUITOS[+el.getAttribute('data-ci')]));
   });
