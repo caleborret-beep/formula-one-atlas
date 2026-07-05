@@ -172,6 +172,53 @@ section{padding:var(--s8) var(--s5);position:relative;}
 .gauge{display:flex;flex-direction:column;align-items:center;gap:6px;}
 .gauge__label{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:.04em;color:var(--text-faint);text-align:center;line-height:1.2;}
 @media(max-width:640px){.cmodal__grid{grid-template-columns:1fr;}}
+/* Tarjeta de campeón */
+.entity-card--champ{position:relative;}
+.entity-card__crown{position:absolute;top:10px;right:12px;color:var(--oro);font-size:11px;letter-spacing:1px;}
+/* Modal de piloto */
+.dmodal__grid{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--s5);margin-top:var(--s4);}
+.dmodal__wide{grid-column:1/-1;}
+.dmodal__note{font-family:var(--mono);font-size:10px;color:var(--text-faint);margin-top:var(--s3);font-style:italic;}
+.fbar{display:flex;align-items:center;gap:var(--s3);margin:5px 0;}
+.fbar__pos{font-family:var(--mono);font-size:11px;color:var(--text-mute);width:52px;flex-shrink:0;text-align:right;}
+.fbar__track{flex:1;height:16px;background:var(--surface);border-radius:4px;overflow:hidden;}
+.fbar__fill{height:100%;border-radius:4px;transition:width .8s ease;}
+.fbar__val{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--text);width:34px;flex-shrink:0;}
+/* Mapa de campeonatos interactivo */
+.chmap{display:flex;gap:var(--s5);flex-wrap:wrap;}
+.chmap__main{flex:1;min-width:300px;}
+.chmap__info{margin-bottom:var(--s4);min-height:44px;display:flex;flex-direction:column;gap:2px;}
+.chmap__info-year{font-family:var(--display);font-weight:700;font-size:1.4rem;text-transform:uppercase;}
+.chmap__info-txt{font-family:var(--mono);font-size:11px;color:var(--text-mute);}
+.chmap__grid{display:flex;flex-wrap:wrap;gap:4px;}
+.chcell{width:42px;height:42px;border-radius:6px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform .18s,opacity .18s,box-shadow .18s;position:relative;padding:0;}
+.chcell span{font-family:var(--mono);font-size:9px;color:rgba(255,255,255,.9);font-weight:700;}
+.chcell:hover{transform:scale(1.15);z-index:5;}
+.chcell--dim{opacity:.2;}
+.chcell--on{opacity:1;box-shadow:0 0 0 2px var(--text);z-index:4;transform:scale(1.08);}
+.chmap__rank{width:210px;flex-shrink:0;}
+.chrank__title{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--text-faint);margin-bottom:var(--s3);}
+.chrank__row{display:flex;align-items:center;gap:8px;width:100%;padding:6px 8px;background:none;border:none;border-radius:6px;cursor:pointer;transition:background .15s;text-align:left;}
+.chrank__row:hover,.chrank__row--on{background:var(--surface-2);}
+.chrank__pos{font-family:var(--mono);font-size:10px;color:var(--text-faint);width:16px;}
+.chrank__dot{width:12px;height:12px;border-radius:3px;flex-shrink:0;}
+.chrank__name{flex:1;font-family:var(--body);font-size:12px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.chrank__n{font-family:var(--display);font-weight:700;font-size:1rem;color:var(--text);}
+/* Linaje dinámico */
+.lin-filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:var(--s5);}
+.lin-filter{font-family:var(--mono);font-size:11px;padding:7px 14px;border-radius:20px;border:1px solid var(--border);background:var(--surface);color:var(--text-mute);cursor:pointer;transition:all .18s;letter-spacing:.03em;}
+.lin-filter:hover{border-color:var(--rojo);color:var(--text);}
+.lin-filter--on{background:var(--rojo);color:#fff;border-color:var(--rojo);}
+.lin-list{display:flex;flex-direction:column;gap:var(--s4);}
+.lin-card{padding:var(--s4) var(--s5);background:var(--surface);border:1px solid var(--border);border-left-width:3px;border-radius:12px;opacity:0;animation:linIn .5s ease forwards;}
+@keyframes linIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+.lin-card__chain{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:10px;}
+.lin-node{font-family:var(--display);font-weight:500;text-transform:uppercase;font-size:1rem;color:var(--text);}
+.lin-node--last{border:1px solid;border-radius:6px;padding:2px 10px;font-weight:700;}
+.lin-arrow{color:var(--rojo);font-weight:700;}
+.lin-badge{font-family:var(--mono);font-size:10px;color:#fff;padding:3px 10px;border-radius:12px;text-transform:uppercase;letter-spacing:.05em;margin-left:auto;}
+.lin-card__note{color:var(--text-mute);font-size:.9rem;margin:0 0 8px;}
+.lin-card__count{font-family:var(--mono);font-size:10px;color:var(--text-faint);letter-spacing:.04em;}
 
 /* PILOTOS / ESCUDERÍAS — tarjetas de entidad */
 .entity-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:var(--s4);margin-top:var(--s6);}
@@ -431,7 +478,7 @@ section{padding:var(--s8) var(--s5);position:relative;}
   <div class="wrap">
     <div class="eyebrow">Capítulo 06 · Las leyendas</div>
     <h2 class="section-title">Pilotos</h2>
-    <p class="lead">Una selección de los pilotos que definieron la Fórmula 1. Toca cualquier ficha para ver su biografía y estadísticas completas.</p>
+    <p class="lead">Los 30 campeones del mundo de Fórmula 1, de Fangio a Verstappen. Toca cualquier ficha para ver su perfil completo: biografía, estadísticas de carrera, posiciones de finalización y desglose del rendimiento.</p>
     <div class="live-badge" style="margin-top:var(--s3)"><span class="dot"></span><span id="f1db-status">Datos oficiales F1DB (917 pilotos en la base) · top 40 por palmarés</span></div>
     <div class="entity-grid" id="drivers-grid" style="margin-top:var(--s5)"></div>
 
@@ -645,6 +692,38 @@ const PILOTOS=[
   {id:"PET",name:"Ronnie Peterson",nat:"Suecia",years:"1944\u20131978",team:'',accent:"#8A8A8A",wins:10,poles:14,podiums:26,fastest:9,titles:0,starts:123,points:206,laps:5724,dotd:0,slams:0,born:"1944",died:"1978",teams:["Suecia"],bio:"Ronnie Peterson, Suecia. 10 victorias, 0 títulos mundiales en 123 Grandes Premios."},
   {id:"SUR",name:"John Surtees",nat:"Reino Unido",years:"1934\u20132017",team:'',accent:"#8A8A8A",wins:6,poles:8,podiums:24,fastest:11,titles:1,starts:111,points:180,laps:4988,dotd:0,slams:0,born:"1934",died:"2017",teams:["Reino Unido"],bio:"John Surtees, Reino Unido. 6 victorias, 1 título mundial en 111 Grandes Premios."},
 ];
+const DRIVER_EXTRA={
+  "Lewis Hamilton":{birth:"Stevenage, Inglaterra",height:"1.74 m",num:44},
+  "Michael Schumacher":{birth:"Hürth, Alemania",height:"1.74 m",num:1},
+  "Max Verstappen":{birth:"Hasselt, Bélgica",height:"1.81 m",num:1},
+  "Sebastian Vettel":{birth:"Heppenheim, Alemania",height:"1.75 m",num:5},
+  "Alain Prost":{birth:"Lorette, Francia",height:"1.67 m",num:1},
+  "Ayrton Senna":{birth:"São Paulo, Brasil",height:"1.74 m",num:12},
+  "Fernando Alonso":{birth:"Oviedo, España",height:"1.71 m",num:14},
+  "Juan Manuel Fangio":{birth:"Balcarce, Argentina",height:"1.74 m",num:1},
+  "Niki Lauda":{birth:"Viena, Austria",height:"1.77 m",num:1},
+  "Nigel Mansell":{birth:"Upton-upon-Severn, Inglaterra",height:"1.80 m",num:5},
+  "Nelson Piquet":{birth:"Río de Janeiro, Brasil",height:"1.73 m",num:1},
+  "Jackie Stewart":{birth:"Milton, Escocia",height:"1.72 m",num:1},
+  "Kimi Räikkönen":{birth:"Espoo, Finlandia",height:"1.75 m",num:7},
+  "Jim Clark":{birth:"Kilmany, Escocia",height:"1.70 m",num:1},
+  "Nico Rosberg":{birth:"Wiesbaden, Alemania",height:"1.78 m",num:6},
+  "Mika Häkkinen":{birth:"Vantaa, Finlandia",height:"1.79 m",num:1},
+  "Damon Hill":{birth:"Hampstead, Inglaterra",height:"1.83 m",num:0},
+  "Jack Brabham":{birth:"Hurstville, Australia",height:"1.75 m",num:1},
+  "Graham Hill":{birth:"Hampstead, Inglaterra",height:"1.80 m",num:0},
+  "Emerson Fittipaldi":{birth:"São Paulo, Brasil",height:"1.74 m",num:1},
+  "Jenson Button":{birth:"Frome, Inglaterra",height:"1.82 m",num:22},
+  "Alberto Ascari":{birth:"Milán, Italia",height:"1.75 m",num:1},
+  "Lando Norris":{birth:"Bristol, Inglaterra",height:"1.70 m",num:4},
+  "Mario Andretti":{birth:"Montona, Italia",height:"1.68 m",num:5},
+  "Jacques Villeneuve":{birth:"Saint-Jean, Canadá",height:"1.68 m",num:1},
+  "James Hunt":{birth:"Belmont, Inglaterra",height:"1.85 m",num:1},
+  "Alan Jones":{birth:"Melbourne, Australia",height:"1.75 m",num:1},
+  "Jody Scheckter":{birth:"East London, Sudáfrica",height:"1.78 m",num:1},
+  "Denny Hulme":{birth:"Nelson, Nueva Zelanda",height:"1.76 m",num:5},
+  "John Surtees":{birth:"Tatsfield, Inglaterra",height:"1.75 m",num:1}
+};
 
 /* ---------- ESCUDERÍAS (14 con historia completa) ---------- */
 const ESCUDERIAS=[
@@ -766,46 +845,105 @@ const LINEAGE=[
 /* ---------- RENDER: HEATMAP de campeones ---------- */
 function renderChampHeatmap(containerId,data){
   const el=document.getElementById(containerId);
-  const cols=18; // celdas por fila
-  let html='<div style="display:flex;flex-wrap:wrap;gap:4px;max-width:900px">';
-  data.forEach(([year,who,color])=>{
-    html+=`<div class="heat-cell" data-tip="${year} · ${who}"
-      style="width:44px;height:44px;border-radius:6px;background:${color};opacity:.9;display:flex;align-items:center;justify-content:center;cursor:default;position:relative;transition:transform .2s"
-      onmouseover="this.style.transform='scale(1.15)';this.style.zIndex=10;showHeatTip(event,'${year}','${who.replace(/'/g,'')}')"
-      onmouseout="this.style.transform='';this.style.zIndex=1;hideHeatTip()">
-      <span style="font-family:var(--mono);font-size:9px;color:rgba(255,255,255,.85);font-weight:700">${String(year).slice(2)}</span>
-    </div>`;
-  });
-  html+='</div>';
-  el.innerHTML=html;
-}
-// Tooltip flotante compartido
-let _heatTip=null;
-function showHeatTip(e,year,who){
-  if(!_heatTip){_heatTip=document.createElement('div');_heatTip.style.cssText='position:fixed;z-index:3000;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-family:var(--mono);font-size:12px;color:var(--text);pointer-events:none;box-shadow:0 8px 24px rgba(0,0,0,.4)';document.body.appendChild(_heatTip);}
-  _heatTip.innerHTML=`<b style="color:var(--rojo)">${year}</b> · Campeón: ${who}`;
-  _heatTip.style.display='block';
-  _heatTip.style.left=(e.clientX+14)+'px';
-  _heatTip.style.top=(e.clientY-10)+'px';
-}
-function hideHeatTip(){if(_heatTip)_heatTip.style.display='none';}
+  if(!el)return;
+  // Contar títulos por persona/escudería para el ranking lateral
+  const counts={};
+  data.forEach(([year,who,color])=>{if(!counts[who])counts[who]={n:0,color,years:[]};counts[who].n++;counts[who].years.push(year);});
+  const ranking=Object.entries(counts).sort((a,b)=>b[1].n-a[1].n);
+  const totalYears=data.length;
+  const firstY=data[0][0],lastY=data[data.length-1][0];
 
-/* ---------- RENDER: LINAJE de escuderías ---------- */
+  el.innerHTML=`
+    <div class="chmap">
+      <div class="chmap__main">
+        <div class="chmap__info" id="${containerId}-info">
+          <span class="chmap__info-year">${firstY}–${lastY}</span>
+          <span class="chmap__info-txt">Pasa el cursor sobre un año para resaltar la dinastía · ${totalYears} temporadas</span>
+        </div>
+        <div class="chmap__grid" id="${containerId}-grid"></div>
+      </div>
+      <div class="chmap__rank" id="${containerId}-rank"></div>
+    </div>`;
+
+  const grid=document.getElementById(containerId+'-grid');
+  grid.innerHTML=data.map(([year,who,color])=>
+    `<button class="chcell" data-who="${who.replace(/"/g,'')}" data-year="${year}" style="background:${color}">
+      <span>${String(year).slice(2)}</span>
+    </button>`).join('');
+
+  const rank=document.getElementById(containerId+'-rank');
+  rank.innerHTML=`<div class="chrank__title">Ranking</div>`+ranking.slice(0,10).map(([who,d],i)=>
+    `<button class="chrank__row" data-who="${who.replace(/"/g,'')}">
+      <span class="chrank__pos">${i+1}</span>
+      <span class="chrank__dot" style="background:${d.color}"></span>
+      <span class="chrank__name">${who}</span>
+      <span class="chrank__n">${d.n}</span>
+    </button>`).join('');
+
+  const info=document.getElementById(containerId+'-info');
+  const highlight=(who)=>{
+    grid.querySelectorAll('.chcell').forEach(c=>{
+      const on=c.dataset.who===who;
+      c.classList.toggle('chcell--dim',who&&!on);
+      c.classList.toggle('chcell--on',who&&on);
+    });
+    rank.querySelectorAll('.chrank__row').forEach(r=>r.classList.toggle('chrank__row--on',r.dataset.who===who));
+    if(who&&counts[who]){
+      const d=counts[who];
+      info.innerHTML=`<span class="chmap__info-year" style="color:${d.color}">${who}</span>
+        <span class="chmap__info-txt">${d.n} ${d.n===1?'título':'títulos'} · ${d.years.join(', ')}</span>`;
+    }else{
+      info.innerHTML=`<span class="chmap__info-year">${firstY}–${lastY}</span>
+        <span class="chmap__info-txt">Pasa el cursor sobre un año para resaltar la dinastía · ${totalYears} temporadas</span>`;
+    }
+  };
+  grid.querySelectorAll('.chcell').forEach(c=>{
+    c.addEventListener('mouseenter',()=>highlight(c.dataset.who));
+    c.addEventListener('mouseleave',()=>highlight(null));
+  });
+  rank.querySelectorAll('.chrank__row').forEach(r=>{
+    r.addEventListener('mouseenter',()=>highlight(r.dataset.who));
+    r.addEventListener('mouseleave',()=>highlight(null));
+  });
+}
+
+/* ---------- RENDER: LINAJE de escuderías (interactivo) ---------- */
+let lineageFilter='todas';
 function renderLineage(){
   const el=document.getElementById('lineage');
-  el.innerHTML=LINEAGE.map(l=>{
-    const endColor=l.end.includes('desaparecida')?'var(--rojo)':(l.end.includes('activa')?'#00A19C':'var(--oro)');
-    return `<div style="margin-bottom:24px;padding:16px;background:var(--surface);border:1px solid var(--border);border-radius:12px;border-left:3px solid ${endColor}">
-      <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:8px">
+  if(!el)return;
+  const statusColor=(end)=>end.includes('desaparecida')?'var(--rojo)':(end.includes('activa')?'#00A19C':'var(--oro)');
+  const statusLabel=(end)=>end.includes('activa')?'Activa hoy':(end.includes('desaparecida')?'Desaparecida':end);
+  // Contar para los filtros
+  const activas=LINEAGE.filter(l=>l.end.includes('activa')).length;
+  const desap=LINEAGE.filter(l=>l.end.includes('desaparecida')).length;
+
+  const controls=`<div class="lin-filters">
+    <button class="lin-filter${lineageFilter==='todas'?' lin-filter--on':''}" data-f="todas">Todas · ${LINEAGE.length}</button>
+    <button class="lin-filter${lineageFilter==='activa'?' lin-filter--on':''}" data-f="activa">Activas hoy · ${activas}</button>
+    <button class="lin-filter${lineageFilter==='desaparecida'?' lin-filter--on':''}" data-f="desaparecida">Desaparecidas · ${desap}</button>
+  </div>`;
+
+  const visible=LINEAGE.filter(l=>lineageFilter==='todas'||l.end.includes(lineageFilter));
+  const cards=visible.map((l,idx)=>{
+    const col=statusColor(l.end);
+    return `<div class="lin-card" style="border-left-color:${col};animation-delay:${idx*60}ms">
+      <div class="lin-card__chain">
         ${l.chain.map((name,i)=>`
-          <span style="font-family:var(--display);font-weight:500;text-transform:uppercase;font-size:1rem;color:${name==='—'?'var(--text-faint)':'var(--text)'}">${name}</span>
-          ${i<l.chain.length-1?'<span style="color:var(--rojo)">→</span>':''}
+          <span class="lin-node${i===l.chain.length-1?' lin-node--last':''}" style="${i===l.chain.length-1?`color:${col};border-color:${col}`:''}">${name}</span>
+          ${i<l.chain.length-1?'<span class="lin-arrow">→</span>':''}
         `).join('')}
-        <span style="font-family:var(--mono);font-size:11px;color:${endColor};margin-left:8px;letter-spacing:.06em">[${l.end}]</span>
+        <span class="lin-badge" style="background:${col}">${statusLabel(l.end)}</span>
       </div>
-      <p style="color:var(--text-mute);font-size:.9rem;margin:0">${l.note}</p>
+      <p class="lin-card__note">${l.note}</p>
+      <div class="lin-card__count">${l.chain.length} identidades a lo largo de su historia</div>
     </div>`;
   }).join('');
+
+  el.innerHTML=controls+`<div class="lin-list">${cards}</div>`;
+  el.querySelectorAll('.lin-filter').forEach(b=>{
+    b.addEventListener('click',()=>{lineageFilter=b.dataset.f;renderLineage();});
+  });
 }
 
 /* ---------- CAPA DE DATOS · Jolpica con caché en memoria ---------- */
@@ -1209,15 +1347,18 @@ function circuitTrackSlot(c){
 
 /* ---------- RENDER: PILOTOS y ESCUDERÍAS ---------- */
 function renderDrivers(){
-  document.getElementById('drivers-grid').innerHTML=PILOTOS.map(p=>`
-    <article class="entity-card" data-driver="${p.id}" style="--ent-accent:${p.accent}" tabindex="0" role="button" aria-label="Ver ficha de ${p.name}">
+  // Solo campeones del mundo, ordenados por número de títulos y luego victorias
+  const champs=PILOTOS.filter(p=>p.titles>0).sort((a,b)=>(b.titles-a.titles)||(b.wins-a.wins));
+  document.getElementById('drivers-grid').innerHTML=champs.map(p=>`
+    <article class="entity-card entity-card--champ" data-driver="${p.id}" data-name="${p.name}" style="--ent-accent:${p.accent}" tabindex="0" role="button" aria-label="Ver ficha de ${p.name}">
+      <div class="entity-card__crown">${'★'.repeat(Math.min(p.titles,7))}</div>
       <div class="entity-card__badge" style="background:${p.accent}">${p.id.replace(/[0-9]/g,'')}</div>
       <div class="entity-card__name">${p.name}</div>
       <div class="entity-card__sub">${p.nat} · ${p.years}</div>
       <div class="entity-card__stats">
+        <div class="entity-card__stat"><b class="entity-card__champ">${p.titles}</b><span>${p.titles===1?'Título':'Títulos'}</span></div>
         <div class="entity-card__stat"><b>${p.wins}</b><span>Victorias</span></div>
-        <div class="entity-card__stat"><b>${p.poles}</b><span>Poles</span></div>
-        <div class="entity-card__stat"><b class="entity-card__champ">${p.titles}</b><span>Títulos</span></div>
+        <div class="entity-card__stat"><b>${p.podiums}</b><span>Podios</span></div>
       </div>
     </article>`).join('');
 }
@@ -1249,22 +1390,116 @@ function miniBars(data){
     }).join('')
   }</svg>`;
 }
+// Deriva las posiciones de finalización a partir de estadísticas reales del piloto.
+// Es una estimación coherente (no dato oficial carrera a carrera): reparte las llegadas
+// entre P1 (victorias), P2-P3 (resto de podios) y el resto de posiciones, más DNF/otros.
+function deriveFinishes(p){
+  const wins=p.wins,podium=p.podiums,starts=p.starts;
+  const p1=wins;
+  const nonWinPodium=Math.max(0,podium-wins);
+  const p2=Math.round(nonWinPodium*0.55), p3=nonWinPodium-p2;
+  // Puntos fuera de podio (P4-P10) ~ proporción típica
+  const pointsFinishes=Math.round(starts*0.28);
+  const p4_10=Math.max(0,pointsFinishes);
+  // DNF/otros ~ tasa histórica de abandono
+  const dnf=Math.max(0,Math.round(starts*0.18));
+  const others=Math.max(0,starts-p1-p2-p3-p4_10-dnf);
+  return {p1,p2,p3,p4_10,others,dnf,starts};
+}
+// Deriva porcentajes de rendimiento (todos sobre starts) — coherentes con datos reales
+function derivePerf(p){
+  const s=p.starts||1;
+  return {
+    winRate:Math.round(p.wins/s*1000)/10,
+    podiumRate:Math.round(p.podiums/s*1000)/10,
+    poleRate:Math.round(p.poles/s*1000)/10,
+    flRate:Math.round(p.fastest/s*1000)/10,
+    pointsRate:Math.min(100,Math.round((p.podiums+p.starts*0.28)/s*1000)/10),
+    finishRate:Math.min(100,Math.round((1-0.18)*1000)/10)
+  };
+}
+function hbar(label,value,max,color){
+  const w=Math.max(2,Math.round(value/max*100));
+  return `<div class="fbar"><span class="fbar__pos">${label}</span>
+    <div class="fbar__track"><div class="fbar__fill" style="width:${w}%;background:${color}"></div></div>
+    <span class="fbar__val">${value}</span></div>`;
+}
 function openDriverModal(p){
   lastFocused=document.activeElement;
-  const b=document.getElementById('modal-badge');b.textContent=p.id.replace(/[0-9]/g,'');b.style.background=p.accent;
+  const ex=DRIVER_EXTRA[p.name]||{birth:'—',height:'—',num:'—'};
+  const f=deriveFinishes(p),perf=derivePerf(p);
+  const b=document.getElementById('modal-badge');b.textContent=p.id.replace(/[0-9]/g,'');b.style.background=p.accent;b.style.fontSize='1.5rem';
   document.getElementById('modal-name').textContent=p.name;
-  document.getElementById('modal-sub').textContent=`${p.nat} · ${p.years} · ${p.titles} ${p.titles===1?'título mundial':'títulos mundiales'}`;
-  document.getElementById('modal-bio').innerHTML=`${p.bio}
-    <div style="margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--text-faint);letter-spacing:.04em">ESCUDERÍAS: ${p.teams.join(' · ')}</div>`;
-  document.getElementById('modal-stats').innerHTML=
-    [['Victorias',p.wins],['Poles',p.poles],['Podios',p.podiums],['V. rápidas',p.fastest],['Títulos',p.titles],['Carreras',p.starts]].map(s=>`<div class="modal__stat"><b>${s[1]}</b><span>${s[0]}</span></div>`).join('')
-    + `<div style="grid-column:1/-1">${miniBars([
-        {l:'Victorias',v:p.wins,c:p.accent},
-        {l:'Poles',v:p.poles,c:'var(--azul)'},
-        {l:'Podios',v:p.podiums,c:'#888'},
-        {l:'V. rápidas',v:p.fastest,c:'var(--text-faint)'},
-      ])}</div>`;
+  document.getElementById('modal-sub').innerHTML=`${p.nat} · ${p.years} · <span style="color:var(--oro)">${p.titles} ${p.titles===1?'título mundial':'títulos mundiales'}</span>`;
+
+  const maxFinish=Math.max(f.p1,f.p2,f.p3,f.p4_10,f.others,f.dnf,1);
+  document.getElementById('modal-bio').innerHTML=`
+    <p style="margin-bottom:var(--s5)">${p.bio}</p>
+    <div class="dmodal__grid">
+
+      <!-- PERFIL DEL CONDUCTOR -->
+      <div class="cmodal__block">
+        <div class="cmodal__title">Perfil del conductor</div>
+        ${circuitRow('País',p.nat)}
+        ${circuitRow('Altura',ex.height)}
+        ${circuitRow('Lugar de nacimiento',ex.birth)}
+        ${circuitRow('Nacimiento',p.born+(p.died?(' · † '+p.died):''))}
+        ${circuitRow('Número',ex.num===0?'—':('#'+ex.num))}
+        ${circuitRow('Temporadas',p.years)}
+      </div>
+
+      <!-- ESTADÍSTICAS COMPLETAS -->
+      <div class="cmodal__block">
+        <div class="cmodal__title">Estadísticas completas</div>
+        ${circuitRow('Campeonatos',p.titles,true)}
+        ${circuitRow('Grandes Premios',p.starts)}
+        ${circuitRow('Victorias',p.wins,true)}
+        ${circuitRow('Poles',p.poles,true)}
+        ${circuitRow('Podios',p.podiums,true)}
+        ${circuitRow('Vueltas rápidas',p.fastest)}
+        ${circuitRow('Puntos totales',p.points.toLocaleString('es'))}
+      </div>
+
+      <!-- POSICIONES DE FINALIZACIÓN -->
+      <div class="cmodal__block dmodal__wide">
+        <div class="cmodal__title">Posiciones de finalización de carrera</div>
+        ${hbar('P1',f.p1,maxFinish,'#E8151E')}
+        ${hbar('P2',f.p2,maxFinish,'#F58220')}
+        ${hbar('P3',f.p3,maxFinish,'#F58220')}
+        ${hbar('P4–10',f.p4_10,maxFinish,'#C9A227')}
+        ${hbar('Otras',f.others,maxFinish,'#888')}
+        ${hbar('DNF',f.dnf,maxFinish,'#555')}
+        <p class="dmodal__note">Distribución estimada a partir de victorias, podios y participaciones reales.</p>
+      </div>
+
+      <!-- DESGLOSE DEL RENDIMIENTO -->
+      <div class="cmodal__block dmodal__wide">
+        <div class="cmodal__title">Desglose del rendimiento</div>
+        <div class="gauge__grid">
+          ${gauge(perf.winRate,'Ratio victorias',gaugeColor(perf.winRate*2))}
+          ${gauge(perf.podiumRate,'Tasa podio',gaugeColor(perf.podiumRate))}
+          ${gauge(perf.poleRate,'Pole rate',gaugeColor(perf.poleRate*2))}
+          ${gauge(perf.flRate,'V. rápida',gaugeColor(perf.flRate*2))}
+        </div>
+      </div>
+
+      <!-- PALMARÉS EN BARRAS -->
+      <div class="cmodal__block dmodal__wide">
+        <div class="cmodal__title">Palmarés</div>
+        ${miniBars([
+          {l:'Victorias',v:p.wins,c:p.accent},
+          {l:'Poles',v:p.poles,c:'var(--azul)'},
+          {l:'Podios',v:p.podiums,c:'#888'},
+          {l:'V. rápidas',v:p.fastest,c:'var(--text-faint)'},
+        ])}
+      </div>
+    </div>`;
+  document.getElementById('modal-stats').innerHTML='';
   backdrop.classList.add('open');document.getElementById('modal-close').focus();
+}
+function findDriver(dc){
+  const nm=dc.dataset.name;
+  return (nm&&PILOTOS.find(p=>p.name===nm))||PILOTOS.find(p=>p.id===dc.dataset.driver);
 }
 function openTeamModal(t){
   lastFocused=document.activeElement;
@@ -2124,13 +2359,13 @@ document.getElementById('start-journey').addEventListener('click',()=>document.g
 
 // Delegación de clics/teclado para fichas
 document.addEventListener('click',e=>{
-  const dc=e.target.closest('[data-driver]');if(dc){openDriverModal(PILOTOS.find(p=>p.id===dc.dataset.driver));return;}
+  const dc=e.target.closest('[data-driver]');if(dc){openDriverModal(findDriver(dc));return;}
   const tc=e.target.closest('[data-team]');if(tc){openTeamModal(ESCUDERIAS.find(t=>t.id===tc.dataset.team));return;}
 });
 document.addEventListener('keydown',e=>{
   if(e.key==='Enter'||e.key===' '){
     const dc=e.target.closest?.('[data-driver]');const tc=e.target.closest?.('[data-team]');
-    if(dc){e.preventDefault();openDriverModal(PILOTOS.find(p=>p.id===dc.dataset.driver));}
+    if(dc){e.preventDefault();openDriverModal(findDriver(dc));}
     else if(tc){e.preventDefault();openTeamModal(ESCUDERIAS.find(t=>t.id===tc.dataset.team));}
   }
 });
